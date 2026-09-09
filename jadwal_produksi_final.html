@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jadwal Produksi — Kamis 10/09</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0e2620;
+    --bg-soft: #123830;
+    --line: rgba(244,251,247,0.10);
+    --ink: #f4fbf7;
+    --ink-dim: #9fcbbe;
+    --ink-faint: #6f9d92;
+
+    --amber: #ffb627;
+    --mint: #59e0c5;
+    --coral: #ff6b5e;
+    --violet: #b9a3ff;
+    --sky: #6fd2ff;
+    --rose: #ff9ecb;
+
+    --radius-lg: 28px;
+    --radius-md: 18px;
+    --radius-sm: 12px;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html{
+    font-size: clamp(14px, 1.05vw, 23px);
+  }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(1200px 700px at 82% -10%, rgba(255,182,39,0.10), transparent 60%),
+      radial-gradient(1000px 600px at -10% 110%, rgba(89,224,197,0.10), transparent 55%),
+      var(--bg);
+    color: var(--ink);
+    font-family:'Manrope', sans-serif;
+    padding: 2.2rem 2.6rem 1.6rem;
+  }
+
+  .board{
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  /* ============ HEADER ============ */
+  .board-header{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap: 2rem;
+    padding-bottom: 1.6rem;
+    border-bottom: 2px dashed var(--line);
+    margin-bottom: 1.4rem;
+    flex-wrap: wrap;
+  }
+
+  .day-block{ display:flex; align-items:baseline; gap:1rem; flex-wrap:wrap; }
+  .day-name{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size: 4.4rem;
+    line-height:0.95;
+    letter-spacing: 0.5px;
+    color: var(--ink);
+  }
+  .day-date{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:600;
+    font-size: 1.5rem;
+    color: var(--ink-dim);
+  }
+
+  .header-meta{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap: 0.6rem;
+  }
+
+  .meta-pills{ display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:flex-end; }
+
+  .shift-pill{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size: 1.15rem;
+    background: var(--amber);
+    color: #3a2600;
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    white-space:nowrap;
+  }
+
+  .progress-pill{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size: 1.05rem;
+    background: rgba(244,251,247,0.08);
+    border: 1.5px solid var(--mint);
+    color: var(--ink);
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    white-space:nowrap;
+  }
+
+  .clock-row{
+    display:flex;
+    align-items:center;
+    gap: 0.7rem;
+    font-family:'Manrope', sans-serif;
+    color: var(--ink-dim);
+    font-size: 0.85rem;
+  }
+  .clock-time{
+    font-family:'Baloo 2', sans-serif;
+    font-size: 1.25rem;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .clock-dot{
+    width:8px; height:8px; border-radius:50%;
+    background: var(--mint);
+    flex-shrink:0;
+  }
+  .clock-dot.off{ background: var(--ink-faint); }
+
+  .progress-wrap{ width: min(320px, 40vw); }
+  .progress-track{
+    height:8px; border-radius:999px;
+    background: rgba(244,251,247,0.12);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%; width:0%;
+    background: linear-gradient(90deg, var(--mint), var(--amber));
+    border-radius:999px;
+    transition: width 1s linear;
+  }
+  .progress-label{
+    margin-top:0.35rem;
+    font-size:0.78rem;
+    color: var(--ink-faint);
+    text-align:right;
+  }
+
+  /* ============ CONTROLS ============ */
+  .controls{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.8rem;
+  }
+
+  .view-switch{
+    display:inline-flex;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.3rem;
+    gap: 0.2rem;
+  }
+  .view-switch button{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size: 0.95rem;
+    border:none;
+    background: transparent;
+    color: var(--ink-dim);
+    padding: 0.55rem 1.2rem;
+    border-radius: 999px;
+    cursor:pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .view-switch button.active{
+    background: var(--mint);
+    color: #003b30;
+  }
+  .view-switch button:not(.active):hover{ color: var(--ink); }
+
+  .area-filters{
+    display:flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .chip{
+    font-family:'Manrope', sans-serif;
+    font-weight:700;
+    font-size: 0.82rem;
+    border: 1.5px solid var(--line);
+    background: rgba(244,251,247,0.04);
+    color: var(--ink-dim);
+    padding: 0.45rem 0.95rem;
+    border-radius: 999px;
+    cursor:pointer;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+    white-space:nowrap;
+  }
+  .chip:hover{ color: var(--ink); }
+  .chip.active{
+    color: var(--bg);
+    background: var(--chip-accent, var(--mint));
+    border-color: var(--chip-accent, var(--mint));
+  }
+
+  .reset-btn{
+    font-family:'Manrope', sans-serif;
+    font-weight:700;
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    background: transparent;
+    border: 1.5px dashed var(--line);
+    border-radius: 999px;
+    padding: 0.4rem 0.85rem;
+    cursor:pointer;
+  }
+  .reset-btn:hover{ color: var(--coral); border-color: var(--coral); }
+
+  /* ============ GRID ============ */
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
+    gap: 1.4rem;
+    align-items: start;
+  }
+
+  .card{
+    background: var(--bg-soft);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line);
+    padding: 1.6rem 1.7rem 1.8rem;
+    position: relative;
+    overflow:hidden;
+  }
+  .card::before{
+    content:"";
+    position:absolute; top:0; left:0; bottom:0; width:8px;
+    background: var(--accent);
+  }
+
+  .card-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 1rem;
+    margin-bottom: 1.3rem;
+    flex-wrap: wrap;
+  }
+
+  .room-tag{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size: 2.2rem;
+    color: var(--accent);
+    line-height:1;
+  }
+  .room-sub{
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+    margin-top: 0.25rem;
+  }
+
+  .time-badge{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size: 1.0rem;
+    background: rgba(244,251,247,0.08);
+    border: 1.5px solid var(--accent);
+    color: var(--ink);
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    white-space:nowrap;
+  }
+
+  .crew-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap: 0.55rem;
+    margin-bottom: 1.4rem;
+  }
+  .crew-chip{
+    display:flex;
+    align-items:center;
+    gap: 0.5rem;
+    background: rgba(244,251,247,0.06);
+    border-radius: 999px;
+    padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+  }
+  .crew-avatar{
+    width: 1.8rem; height: 1.8rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size: 0.85rem;
+    flex-shrink:0;
+  }
+  .crew-name{
+    font-size: 0.85rem;
+    font-weight:600;
+    color: var(--ink);
+    text-transform:capitalize;
+  }
+
+  .person-header{
+    display:flex;
+    align-items:center;
+    gap: 0.9rem;
+    margin-bottom: 0.3rem;
+  }
+  .person-avatar{
+    width: 3rem; height: 3rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size: 1.2rem;
+    flex-shrink:0;
+  }
+  .person-name{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size: 1.4rem;
+    color: var(--ink);
+    text-transform:capitalize;
+  }
+
+  .task-list{
+    list-style:none;
+    margin:0; padding:0;
+    display:flex;
+    flex-direction:column;
+    gap: 0.55rem;
+  }
+  .task-item{
+    display:flex;
+    align-items:flex-start;
+    gap: 0.7rem;
+    font-size: 1.0rem;
+    line-height:1.5;
+    color: var(--ink);
+  }
+
+  .task-check{
+    flex-shrink:0;
+    display:flex;
+    cursor:pointer;
+    margin-top: 0.05rem;
+  }
+  .task-check input{
+    position:absolute;
+    opacity:0;
+    width: 1px; height: 1px;
+  }
+  .check-box{
+    width: 1.6rem; height: 1.6rem;
+    border-radius: 8px;
+    border: 1.8px solid var(--accent);
+    background: rgba(244,251,247,0.04);
+    display:flex; align-items:center; justify-content:center;
+    color: var(--bg);
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+  .check-box svg{
+    width: 1.05rem; height: 1.05rem;
+    opacity:0;
+    transform: scale(0.6);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+  .task-check input:checked + .check-box{
+    background: var(--accent);
+  }
+  .task-check input:checked + .check-box svg{
+    opacity:1;
+    transform: scale(1);
+  }
+  .task-check input:focus-visible + .check-box{
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+  .task-check:active .check-box{ transform: scale(0.92); }
+
+  .task-text{ padding-top: 0.18rem; }
+  .task-item.done .task-text{
+    color: var(--ink-faint);
+    text-decoration: line-through;
+    text-decoration-color: var(--ink-faint);
+  }
+
+  .info-list{
+    list-style:none;
+    margin: 0.9rem 0 0; padding: 0.8rem 0 0;
+    border-top: 1.5px dashed var(--line);
+    display:flex;
+    flex-direction:column;
+    gap: 0.4rem;
+  }
+  .info-item{
+    display:flex;
+    align-items:center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    color: var(--ink-dim);
+  }
+  .info-item .info-tag{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size: 0.7rem;
+    color: var(--accent);
+    border: 1.3px solid var(--accent);
+    border-radius: 999px;
+    padding: 0.12rem 0.55rem;
+    flex-shrink:0;
+  }
+
+  .empty-state{
+    grid-column: 1 / -1;
+    text-align:center;
+    color: var(--ink-faint);
+    padding: 2.5rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  /* ============ FOOTER ============ */
+  .board-footer{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:1rem;
+    margin-top: 1.8rem;
+    padding-top: 1.2rem;
+    border-top: 2px dashed var(--line);
+    flex-wrap:wrap;
+  }
+  .thanks{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size: 1.3rem;
+    color: var(--mint);
+  }
+  .credit{
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+  }
+  .credit b{ color: var(--ink-dim); font-weight:700; }
+
+  /* ============ ENTRANCE (single orchestrated moment) ============ */
+  @media (prefers-reduced-motion: no-preference){
+    .board-header, .controls, .card, .board-footer{
+      opacity:0;
+      animation: rise 0.55s ease forwards;
+    }
+    .board-header{ animation-delay: 0s; }
+    .controls{ animation-delay: 0.08s; }
+    .card{ animation-delay: 0.14s; }
+    .board-footer{ animation-delay: 0.3s; }
+    @keyframes rise{
+      from{ opacity:0; transform: translateY(14px); }
+      to{ opacity:1; transform: translateY(0); }
+    }
+  }
+
+  @media (max-width: 640px){
+    body{ padding: 1.4rem 1.1rem 1.2rem; }
+    .board-header{ align-items:flex-start; }
+    .header-meta{ align-items:flex-start; width:100%; }
+    .progress-wrap{ width:100%; }
+    .controls{ flex-direction:column; align-items:flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- reusable icon sprite -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="icon-broom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 4 L10 14"/>
+    <path d="M9 15 L4 20"/>
+    <path d="M9 13 L6 20 L4 20 L6 15 Z"/>
+    <path d="M12 12 L17 3 L21 7 Z"/>
+  </symbol>
+  <symbol id="icon-flask" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 3h6"/>
+    <path d="M10 3v6l-5.5 9.5A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 1.7-3L14 9V3"/>
+    <path d="M8 15h8"/>
+  </symbol>
+  <symbol id="icon-locker" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="5" y="3" width="14" height="18" rx="1.5"/>
+    <line x1="12" y1="3" x2="12" y2="21"/>
+    <circle cx="9.3" cy="12" r="0.8" fill="currentColor" stroke="none"/>
+    <circle cx="14.7" cy="12" r="0.8" fill="currentColor" stroke="none"/>
+  </symbol>
+  <symbol id="icon-checklist" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="5" y="3.5" width="14" height="17" rx="2"/>
+    <path d="M9 2.5h6a1 1 0 0 1 1 1V5H8V3.5a1 1 0 0 1 1-1Z"/>
+    <path d="m8.5 12 1.8 1.8L13.5 10.5"/>
+    <line x1="8.5" y1="16.5" x2="15.5" y2="16.5"/>
+  </symbol>
+  <symbol id="icon-gown" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 4 6 6l1 3-2 1 1 10h12l1-10-2-1 1-3-3-2"/>
+    <path d="M9 4c0 1.7 1.3 3 3 3s3-1.3 3-3"/>
+  </symbol>
+  <symbol id="icon-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3v4M12 17v4M3 12h4M17 12h4"/>
+    <path d="M12 8a4 4 0 0 0 4 4 4 4 0 0 0-4 4 4 4 0 0 0-4-4 4 4 0 0 0 4-4Z"/>
+  </symbol>
+  <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 12.5 9.5 18 20 6"/>
+  </symbol>
+  <symbol id="icon-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20.5 12.5 12 21l-9-9V4h8Z"/>
+    <circle cx="7.5" cy="8" r="1.2" fill="currentColor" stroke="none"/>
+  </symbol>
+</svg>
+
+<div class="board">
+
+  <header class="board-header">
+    <div class="day-block">
+      <span class="day-name">Kamis</span>
+      <span class="day-date">10 September 2026</span>
+    </div>
+    <div class="header-meta">
+      <div class="meta-pills">
+        <span class="shift-pill">⏱ 06.00 – 20.00</span>
+        <span class="progress-pill" id="taskProgressPill">0/0 tugas selesai</span>
+      </div>
+      <div class="clock-row">
+        <span class="clock-dot" id="clockDot"></span>
+        <span id="clockStatus">Memuat waktu…</span>
+        <span class="clock-time" id="clockTime">--:--:--</span>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-label" id="progressLabel">Rentang shift hari ini</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <div class="view-switch" role="tablist" id="viewSwitch">
+      <button type="button" data-view="area" class="active" role="tab" aria-selected="true">Per Area</button>
+      <button type="button" data-view="personil" role="tab" aria-selected="false">Per Personil</button>
+    </div>
+    <div class="area-filters" id="areaFilters"></div>
+    <button type="button" class="reset-btn" id="resetBtn">Reset checklist</button>
+  </div>
+
+  <div class="grid" id="boardGrid"></div>
+
+  <footer class="board-footer">
+    <div class="thanks">Terima kasih 🙌 — semangat kerja hari ini!</div>
+    <div class="credit">Dijadwalkan oleh <b>Mas Pri Produksi</b> · dikirim 18.03</div>
+  </footer>
+
+</div>
+
+<script>
+  /* ============ DATA ============ */
+  const AREAS = [
+    {
+      id: 'b7b8', room: 'B7 & B8', sub: 'Area produksi & loker B2',
+      time: '08.00 – 17.00', accent: 'amber',
+      crew: ['Zaenal', 'Rian', 'Rahmat', 'Wawan'],
+      tasks: [
+        { id: 'b7b8-1', icon: 'broom', text: 'Cleaning B7' },
+        { id: 'b7b8-2', icon: 'flask', text: 'EM CRabs' },
+        { id: 'b7b8-3', icon: 'locker', text: 'Cleaning loker B2' },
+        { id: 'b7b8-4', icon: 'broom', text: 'Cleaning B8' },
+      ],
+      info: []
+    },
+    {
+      id: 'b6-filling', room: 'B6', sub: 'Filling & cutting sample',
+      time: '08.00 – 17.00', accent: 'mint',
+      crew: ['Lutfy', 'Sarah', 'Jihan'],
+      tasks: [
+        { id: 'b6f-1', icon: 'broom', text: 'Cleaning B6' },
+        { id: 'b6f-2', icon: 'checklist', text: 'Cek lagi material dan kesiapan filling serta cutting sample' },
+        { id: 'b6f-3', icon: 'gown', text: 'Prep. gowning steril' },
+      ],
+      info: []
+    },
+    {
+      id: 'b6-scrub', room: 'B6', sub: 'Scrub, gowning & lobby',
+      time: '08.00 – 17.00', accent: 'coral',
+      crew: ['Adi tya'],
+      tasks: [
+        { id: 'b6s-1', icon: 'gown', text: 'Prep. scrub & gowning abu' },
+        { id: 'b6s-2', icon: 'sparkle', text: 'Cleaning lobby B6' },
+      ],
+      info: []
+    },
+    {
+      id: 'redressing', room: 'Redressing', sub: 'WH CS-116 & B-129 / B-130 / B-130A',
+      time: '06.00 – 15.00', accent: 'violet',
+      crew: ['OSP', 'Wily', 'Kijay', 'Ahdi', 'Dony'],
+      tasks: [
+        { id: 'rd-1', icon: 'flask', text: 'Mengeluarkan produk Bets 21 di WH CS-116 (bertahap)' },
+        { id: 'rd-2', icon: 'broom', text: 'Cleaning ruang dan mesin di B-129, B-130, B-130A + pengisian logbook' },
+        { id: 'rd-3', icon: 'checklist', text: 'Pengecekan suhu ruangan dan CS' },
+        { id: 'rd-4', icon: 'sparkle', text: 'Pembongkaran Bets 21' },
+      ],
+      info: ['PIC Visual Inspeksi: OSP']
+    },
+    {
+      id: 'visual-inspeksi', room: 'Visual Inspeksi', sub: 'Bets 21',
+      time: '09.00 – 18.00', accent: 'sky',
+      crew: ['Rahmi', 'Devia', 'Eka', 'Laila', 'Dwi', 'Lisna'],
+      tasks: [
+        { id: 'vi-1', icon: 'checklist', text: 'Visual Bets 21 — Laila, Eka, Dwi, Rahmi, Devia, Lisna' },
+      ],
+      info: []
+    },
+    {
+      id: 'pengemasan', room: 'Pengemasan Ulang', sub: 'Bets 21',
+      time: '11.00 – 20.00', accent: 'rose',
+      crew: ['SFJ', 'PRY', 'Tono', 'Syuhada', 'Mardi', 'Refi'],
+      tasks: [
+        { id: 'pk-1', icon: 'gown', text: 'Pengemasan ulang Bets 21' },
+      ],
+      info: ['PIC Visual dan Kemas: SFJ, PRY']
+    },
+  ];
+
+  const SHIFT_START_HOUR = 6;
+  const SHIFT_END_HOUR = 20;
+  const ALL_TASKS = AREAS.flatMap(a => a.tasks);
+
+  /* ============ STATE ============ */
+  let taskState = {};      // { taskId: true/false }, shared across everyone viewing the board
+  let currentView = 'area'; // 'area' | 'personil'
+  let currentFilter = 'semua';
+
+  /* ============ STORAGE ============ */
+  async function loadState(){
+    try{
+      const res = await window.storage.get('task-states', true);
+      taskState = res && res.value ? JSON.parse(res.value) : {};
+    }catch(e){
+      taskState = {};
+    }
+    try{
+      const view = await window.storage.get('view-pref', false);
+      if(view && view.value && (view.value === 'area' || view.value === 'personil')){
+        currentView = view.value;
+      }
+    }catch(e){ /* fall back to default */ }
+  }
+
+  async function saveState(){
+    try{
+      await window.storage.set('task-states', JSON.stringify(taskState), true);
+    }catch(e){ console.error('Gagal menyimpan checklist', e); }
+  }
+
+  async function saveViewPref(){
+    try{
+      await window.storage.set('view-pref', currentView, false);
+    }catch(e){ /* non-critical */ }
+  }
+
+  /* ============ HELPERS ============ */
+  function initials(name){
+    return name.trim().split(/\s+/).map(w => w[0]).slice(0,2).join('').toUpperCase();
+  }
+
+  function taskItemHtml(task, accent){
+    const done = !!taskState[task.id];
+    return `
+      <li class="task-item ${done ? 'done' : ''}" data-task-id="${task.id}">
+        <label class="task-check">
+          <input type="checkbox" data-id="${task.id}" ${done ? 'checked' : ''}>
+          <span class="check-box"><svg><use href="#icon-check"/></svg></span>
+        </label>
+        <span class="task-text">${task.text}</span>
+      </li>`;
+  }
+
+  function infoListHtml(info){
+    if(!info.length) return '';
+    return `<ul class="info-list">${info.map(t => `
+      <li class="info-item"><span class="info-tag">Info</span>${t}</li>`).join('')}</ul>`;
+  }
+
+  function areaCardHtml(area){
+    return `
+      <section class="card" style="--accent:var(--${area.accent})">
+        <div class="card-top">
+          <div>
+            <div class="room-tag">${area.room}</div>
+            <div class="room-sub">${area.sub}</div>
+          </div>
+          <span class="time-badge">${area.time}</span>
+        </div>
+        <div class="crew-row">
+          ${area.crew.map(n => `
+            <div class="crew-chip"><span class="crew-avatar">${initials(n)}</span><span class="crew-name">${n}</span></div>`).join('')}
+        </div>
+        <ul class="task-list">
+          ${area.tasks.map(t => taskItemHtml(t, area.accent)).join('')}
+        </ul>
+        ${infoListHtml(area.info)}
+      </section>`;
+  }
+
+  function personCardHtml(name, area){
+    return `
+      <section class="card" style="--accent:var(--${area.accent})">
+        <div class="card-top">
+          <div class="person-header">
+            <span class="person-avatar">${initials(name)}</span>
+            <div>
+              <div class="person-name">${name}</div>
+              <div class="room-sub">${area.room} · ${area.sub}</div>
+            </div>
+          </div>
+          <span class="time-badge">${area.time}</span>
+        </div>
+        <ul class="task-list">
+          ${area.tasks.map(t => taskItemHtml(t, area.accent)).join('')}
+        </ul>
+        ${infoListHtml(area.info)}
+      </section>`;
+  }
+
+  /* ============ RENDER ============ */
+  function renderAreaFilters(){
+    const wrap = document.getElementById('areaFilters');
+    const chips = [{ id: 'semua', label: 'Semua', accent: 'mint' }]
+      .concat(AREAS.map(a => ({ id: a.id, label: a.room === 'B6' ? `B6 · ${a.sub.split(' ')[0]}` : a.room, accent: a.accent })));
+    wrap.innerHTML = chips.map(c => `
+      <button type="button" class="chip ${currentFilter === c.id ? 'active' : ''}" data-filter="${c.id}" style="--chip-accent:var(--${c.accent})">${c.label}</button>
+    `).join('');
+    wrap.style.display = currentView === 'area' ? 'flex' : 'none';
+  }
+
+  function renderBoard(){
+    const grid = document.getElementById('boardGrid');
+
+    if(currentView === 'area'){
+      const areas = currentFilter === 'semua' ? AREAS : AREAS.filter(a => a.id === currentFilter);
+      grid.innerHTML = areas.length ? areas.map(areaCardHtml).join('') : `<div class="empty-state">Tidak ada area yang cocok.</div>`;
+    } else {
+      const cards = [];
+      AREAS.forEach(area => {
+        area.crew.forEach(name => cards.push(personCardHtml(name, area)));
+      });
+      grid.innerHTML = cards.length ? cards.join('') : `<div class="empty-state">Belum ada personil.</div>`;
+    }
+
+    updateProgressPill();
+  }
+
+  function updateProgressPill(){
+    const total = ALL_TASKS.length;
+    const done = ALL_TASKS.filter(t => taskState[t.id]).length;
+    document.getElementById('taskProgressPill').textContent = `${done}/${total} tugas selesai`;
+  }
+
+  /* ============ EVENTS ============ */
+  document.getElementById('viewSwitch').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-view]');
+    if(!btn) return;
+    currentView = btn.dataset.view;
+    document.querySelectorAll('#viewSwitch button').forEach(b => {
+      const active = b === btn;
+      b.classList.toggle('active', active);
+      b.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    renderAreaFilters();
+    renderBoard();
+    saveViewPref();
+  });
+
+  document.getElementById('areaFilters').addEventListener('click', (e) => {
+    const chip = e.target.closest('.chip');
+    if(!chip) return;
+    currentFilter = chip.dataset.filter;
+    document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c === chip));
+    renderBoard();
+  });
+
+  document.getElementById('boardGrid').addEventListener('change', (e) => {
+    const input = e.target.closest('input[type="checkbox"][data-id]');
+    if(!input) return;
+    const id = input.dataset.id;
+    taskState[id] = input.checked;
+    // reflect on every card showing this task (area + personnel views share task ids)
+    document.querySelectorAll(`input[data-id="${id}"]`).forEach(el => { el.checked = input.checked; });
+    document.querySelectorAll(`[data-task-id="${id}"]`).forEach(el => el.classList.toggle('done', input.checked));
+    updateProgressPill();
+    saveState();
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    if(!confirm('Reset semua checklist ke belum selesai?')) return;
+    taskState = {};
+    renderBoard();
+    saveState();
+  });
+
+  /* ============ CLOCK ============ */
+  const clockTimeEl = document.getElementById('clockTime');
+  const clockStatusEl = document.getElementById('clockStatus');
+  const clockDotEl = document.getElementById('clockDot');
+  const progressFillEl = document.getElementById('progressFill');
+  const progressLabelEl = document.getElementById('progressLabel');
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  function tick(){
+    const now = new Date();
+    clockTimeEl.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
+    const startMin = SHIFT_START_HOUR * 60;
+    const endMin = SHIFT_END_HOUR * 60;
+    const nowMin = now.getHours() * 60 + now.getMinutes() + now.getSeconds()/60;
+
+    let pct, status, dotOff = false;
+    if(nowMin < startMin){
+      pct = 0;
+      status = 'Shift belum mulai';
+      dotOff = true;
+    } else if(nowMin > endMin){
+      pct = 100;
+      status = 'Shift sudah selesai';
+      dotOff = true;
+    } else {
+      pct = ((nowMin - startMin) / (endMin - startMin)) * 100;
+      status = 'Sedang berlangsung';
+    }
+
+    progressFillEl.style.width = pct + '%';
+    progressLabelEl.textContent = `Rentang shift hari ini · ${Math.round(pct)}%`;
+    clockStatusEl.textContent = status;
+    clockDotEl.classList.toggle('off', dotOff);
+  }
+
+  tick();
+  setInterval(tick, 1000);
+
+  /* ============ INIT ============ */
+  (async function init(){
+    await loadState();
+    document.querySelectorAll('#viewSwitch button').forEach(b => {
+      const active = b.dataset.view === currentView;
+      b.classList.toggle('active', active);
+      b.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    renderAreaFilters();
+    renderBoard();
+  })();
+</script>
+
+</body>
+</html>
